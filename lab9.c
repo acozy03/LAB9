@@ -24,6 +24,42 @@ struct HashType
     struct Node *head; // Array of pointers to nodes
 };
 
+// Parses input file to an array of RecordType structures
+int parseData(char* inputFileName, struct RecordType** ppData)
+{
+    FILE* inFile = fopen(inputFileName, "r");
+    int dataSz = 0;
+    int i, n;
+    char c;
+    struct RecordType *pRecord;
+    *ppData = NULL;
+
+    if (inFile)
+    {
+        fscanf(inFile, "%d\n", &dataSz);
+        *ppData = (struct RecordType*) malloc(sizeof(struct RecordType) * dataSz);
+        if (*ppData == NULL)
+        {
+            printf("Cannot allocate memory\n");
+            exit(EXIT_FAILURE);
+        }
+        for (i = 0; i < dataSz; ++i)
+        {
+            pRecord = *ppData + i;
+            fscanf(inFile, "%d ", &n);
+            pRecord->id = n;
+            fscanf(inFile, " %c ", &c); // Note the space before %c to skip any whitespace characters
+            pRecord->name = c;
+            fscanf(inFile, "%d ", &n);
+            pRecord->order = n;
+        }
+
+        fclose(inFile);
+    }
+
+    return dataSz;
+}
+
 // Initialize hash table
 void initializeHashTable(struct HashType *hashTable, int size)
 {
